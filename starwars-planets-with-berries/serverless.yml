@@ -12,17 +12,55 @@ provider:
   # https://www.serverless.com/framework/docs/providers/aws/guide/domains
   # domain: api.example.com
 
-# plugins:
-#   - serverless-plugin-typescript
-
-# custom:
-#   serverlessPluginTypescript:
-#     tsConfigFileLocation: "./tsconfig.build.json"
+custom:
+  cacheDynamoDBTable: "StarWarsCacheTable"
+  historicalDynamoDBTable: "StarWarsHistoricalResponseTable"
 
 functions:
   hello:
-    handler: handler.hello
+    handler: src/controller/xxxxxxxx.hello
     events:
       - httpApi:
-          path: /
+          path: /planet/{id}
           method: get
+    environment:
+      CACHE_TABLE_NAME: ${self:custom.cacheDynamoDBTable}
+      HISTORICAL_TABLE_NAME: ${self:custom.historicalDynamoDBTable}
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:GetItem
+          - dynamodb:PutItem
+        Resource:
+          - arn:aws:dynamodb:*:*:table/${self:custom.cacheDynamoDBTable}
+      - Effect: Allow
+        Action:
+          - dynamodb:PutItem
+
+resources:
+  Resources:
+    StarWarsCacheTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.cacheDynamoDBTable}
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: N
+        KeySchema:
+          - KeyType: HASH
+            AttributeName: id
+        BillingMode: PAY_PER_REQUEST
+        TimeToLiveSpecification:
+          AttributeName: ttl
+          Enabled: true
+    StarWarsHistoricalResponseTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.historicalDynamoDBTable}
+        AttributeDefinitions:
+          - AttributeName: responseTime
+            AttributeType: S
+        KeySchema:
+          - KeyType: HASH
+            AttributeName: responseTime
+        BillingMode: PAY_PER_REQUEST
