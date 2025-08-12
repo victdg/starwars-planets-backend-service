@@ -3,7 +3,7 @@ import { InternalErrorException } from "../../application/exceptions/internalErr
 import { IHttpClient } from "./IHttpClient";
 import { NotFoundException } from "../../application/exceptions/notFoundException";
 
-export class axiosClient implements IHttpClient {
+export class AxiosClient implements IHttpClient {
   async get<T>(url: string): Promise<T> {
     try {
       const dataFromApi = await axios.get<T>(url);
