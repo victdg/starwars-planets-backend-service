@@ -8,6 +8,8 @@ service: starwars-planets-with-berries
 provider:
   name: aws
   runtime: nodejs20.x
+  region: ${self:custom.awsRegion}
+
   # Uncomment to easily set up a custom domain. Read the docs for more details:
   # https://www.serverless.com/framework/docs/providers/aws/guide/domains
   # domain: api.example.com
@@ -15,6 +17,7 @@ provider:
 custom:
   cacheDynamoDBTable: "StarWarsCacheTable"
   historicalDynamoDBTable: "StarWarsHistoricalResponseTable"
+  awsRegion: us-east-1
 
 functions:
   hello:
@@ -26,6 +29,8 @@ functions:
     environment:
       CACHE_TABLE_NAME: ${self:custom.cacheDynamoDBTable}
       HISTORICAL_TABLE_NAME: ${self:custom.historicalDynamoDBTable}
+      REGION: ${self:custom.awsRegion}
+
     iamRoleStatements:
       - Effect: Allow
         Action:
@@ -36,6 +41,8 @@ functions:
       - Effect: Allow
         Action:
           - dynamodb:PutItem
+        Resource:
+          - arn:aws:dynamodb:*:*:table/${self:custom.historicalDynamoDBTable}
 
 resources:
   Resources:
@@ -58,9 +65,13 @@ resources:
       Properties:
         TableName: ${self:custom.historicalDynamoDBTable}
         AttributeDefinitions:
-          - AttributeName: responseTime
+          - AttributeName: type
             AttributeType: S
+          - AttributeName: timestamp
+            AttributeType: N
         KeySchema:
-          - KeyType: HASH
-            AttributeName: responseTime
+          - AttributeName: type
+            KeyType: HASH
+          - AttributeName: timestamp
+            KeyType: RANGE
         BillingMode: PAY_PER_REQUEST

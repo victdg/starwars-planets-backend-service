@@ -1,6 +1,6 @@
-import { StarWarsPlanet } from "../models/starWarsPlanet";
+import { StarWarsPlanetModel } from "../models/starWarsPlanetModel";
 
 export interface StarWarsCachePort {
-  fetch(id: number): Promise<StarWarsPlanet | null>;
-  save(starWarsPlanet: StarWarsPlanet): Promise<void>;
+  fetch(id: number): Promise<StarWarsPlanetModel | null>;
+  save(starWarsPlanet: StarWarsPlanetModel): Promise<void>;
 }

@@ -1,12 +1,12 @@
 import { IStarWarsPlanet } from "./IStarWarsPlanet";
-import { Berry } from "./models/Berry";
+import { Berry } from "./models/berry";
 import { Planet } from "./models/planet";
 import { StarWarsPlanetModel } from "./models/starWarsPlanetModel";
 import { BerryPort } from "./ports/berryPort";
 import { PlanetPort } from "./ports/planetPort";
 import { StarWarsCachePort } from "./ports/starWarsCachePort";
 
-export class StarWarsPlanet implements IStarWarsPlanet {
+export class StarWarsPlanetService implements IStarWarsPlanet {
   constructor(
     private readonly berryAdapter: BerryPort,
     private readonly planetAdapter: PlanetPort,
@@ -51,7 +51,9 @@ export class StarWarsPlanet implements IStarWarsPlanet {
       surface_water: planet.surface_water,
       population: planet.population,
       typicalFood: {
-        name: berry.item.name,
+        name: berry.name,
+        growth_time: berry.growth_time,
+        smoothness: berry.smoothness,
         size: berry.size,
       },
     };

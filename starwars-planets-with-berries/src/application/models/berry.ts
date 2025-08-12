@@ -1,5 +1,7 @@
 export interface Berry {
   id: number;
-  item: { name: string };
+  growth_time: string;
+  smoothness: string;
+  name: string;
   size: number;
 }

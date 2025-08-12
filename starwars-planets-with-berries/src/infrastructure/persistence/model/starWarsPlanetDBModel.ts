@@ -1,4 +1,5 @@
-export interface Planet {
+export interface StarWarsPlanetDBModel {
+  id: number;
   name: string;
   rotation_period: string;
   orbital_period: string;
@@ -8,4 +9,9 @@ export interface Planet {
   terrain: string;
   surface_water: string;
   population: string;
+  typicalFood: {
+    name: string;
+    size: number;
+  };
+  ttl: number;
 }
