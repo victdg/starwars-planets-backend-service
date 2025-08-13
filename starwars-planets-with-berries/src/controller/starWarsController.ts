@@ -1,32 +1,21 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import { IStarWarsPlanet } from "../application/IStarWarsPlanet";
+import { errorResponseManager, responseOkGenerator } from "../utils/helpers";
 
 export class StarWarsController {
   constructor(private readonly starWarsService: IStarWarsPlanet) {}
   async getPlanets(
     event: APIGatewayProxyEvent
   ): Promise<APIGatewayProxyResult> {
-    // return {
-    //   statusCode: 200,
-    //   body: JSON.stringify({
-    //     message: "getPlanets",
-    //   }),
-    // };
     try {
+      console.log("Controller started");
+      console.log(event);
       const id: number = Number(event.pathParameters!.id!);
       const resultFromService = await this.starWarsService.fetchPlanet(id);
-      return {
-        statusCode: 200,
-        body: JSON.stringify(resultFromService),
-      };
+      return responseOkGenerator(resultFromService);
     } catch (error) {
       console.error("Error in getPlanets:", error);
-      return {
-        statusCode: error.statusCode || 500,
-        body: JSON.stringify({
-          message: error.message || "Internal Server Error",
-        }),
-      };
+      return errorResponseManager(error);
     }
   }
 }

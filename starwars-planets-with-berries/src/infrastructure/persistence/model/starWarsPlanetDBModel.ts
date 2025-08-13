@@ -11,6 +11,8 @@ export interface StarWarsPlanetDBModel {
   population: string;
   typicalFood: {
     name: string;
+    growth_time: string;
+    smoothness: string;
     size: number;
   };
   ttl: number;

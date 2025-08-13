@@ -5,11 +5,7 @@ import { IDBClient } from "../IDBClient";
 import { StarWarsPlanetDBModel } from "../model/starWarsPlanetDBModel";
 
 export class StarWarsCacheAdapter implements StarWarsCachePort {
-  private readonly dynamoClient: IDBClient;
-
-  constructor(dynamoClient) {
-    this.dynamoClient = dynamoClient;
-  }
+  constructor(private readonly dynamoClient: IDBClient) {}
 
   async fetch(id: number): Promise<StarWarsPlanetModel | null> {
     const starWarsPlanetInCache =
@@ -20,11 +16,17 @@ export class StarWarsCacheAdapter implements StarWarsCachePort {
     if (!starWarsPlanetInCache) {
       return null;
     }
-    return starWarsPlanetInCache;
+    const { ttl, ...starWarsPlanetFromCache } = starWarsPlanetInCache;
+    return starWarsPlanetFromCache;
   }
 
   async save(starWarsPlanet: StarWarsPlanetModel): Promise<void> {
     const ttl = Math.floor(Date.now() / 1000) + TTL_IN_SECONDS;
-    this.dynamoClient.saveItem(CACHE_TABLE_NAME!, { ttl, ...starWarsPlanet });
+    console.log(ttl);
+    const starWarsPlanetWithTtl: StarWarsPlanetDBModel = {
+      ...starWarsPlanet,
+      ttl,
+    };
+    this.dynamoClient.saveItem(CACHE_TABLE_NAME!, starWarsPlanetWithTtl);
   }
 }

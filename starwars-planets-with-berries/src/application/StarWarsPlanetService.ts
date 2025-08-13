@@ -1,28 +1,41 @@
+import {
+  FETCH_FROM_CACHE,
+  SAVE_IN_CACHE,
+  STAR_WARS_PLANET_HISTORICAL_TYPE,
+} from "../utils/constants";
 import { IStarWarsPlanet } from "./IStarWarsPlanet";
 import { Berry } from "./models/berry";
 import { Planet } from "./models/planet";
+import { ResponseHistoricalModel } from "./models/responseHistorical";
 import { StarWarsPlanetModel } from "./models/starWarsPlanetModel";
+import { StarWarsPlanetPayloadModel } from "./models/starWarsPlanetPayloadModel";
 import { BerryPort } from "./ports/berryPort";
 import { PlanetPort } from "./ports/planetPort";
+import { ResponseHistoricalPort } from "./ports/responseHistoricalPort";
 import { StarWarsCachePort } from "./ports/starWarsCachePort";
 
 export class StarWarsPlanetService implements IStarWarsPlanet {
   constructor(
     private readonly berryAdapter: BerryPort,
     private readonly planetAdapter: PlanetPort,
-    private readonly starWarsCacheAdapter: StarWarsCachePort
-  ) {
-    this.berryAdapter = berryAdapter;
-    this.planetAdapter = planetAdapter;
-    this.starWarsCacheAdapter = starWarsCacheAdapter;
-  }
+    private readonly starWarsCacheAdapter: StarWarsCachePort,
+    private readonly responseHistoricalAdapter: ResponseHistoricalPort
+  ) {}
 
-  async fetchPlanet(planetId: number): Promise<StarWarsPlanetModel> {
+  async fetchPlanet(planetId: number): Promise<StarWarsPlanetPayloadModel> {
     let starWarsPlanetDataFromCache = await this.starWarsCacheAdapter.fetch(
       planetId
     );
     if (starWarsPlanetDataFromCache !== null) {
-      return starWarsPlanetDataFromCache;
+      const starWarsPlanetPayload: StarWarsPlanetPayloadModel = {
+        data: starWarsPlanetDataFromCache,
+        cache: FETCH_FROM_CACHE,
+      };
+      const historicalDataToSave = this.responseHistoricalDataCreate(
+        starWarsPlanetPayload
+      );
+      this.responseHistoricalAdapter.save(historicalDataToSave);
+      return starWarsPlanetPayload;
     }
 
     const [berry, planet] = await Promise.all([
@@ -32,7 +45,16 @@ export class StarWarsPlanetService implements IStarWarsPlanet {
 
     const starWarsPlanet = this.planetFromBerryAndPlanet(berry, planet);
     await this.starWarsCacheAdapter.save(starWarsPlanet);
-    return starWarsPlanet;
+
+    const starWarsPlanetPayload: StarWarsPlanetPayloadModel = {
+      data: starWarsPlanet,
+      cache: SAVE_IN_CACHE,
+    };
+    const historicalDataToSave = this.responseHistoricalDataCreate(
+      starWarsPlanetPayload
+    );
+    this.responseHistoricalAdapter.save(historicalDataToSave);
+    return starWarsPlanetPayload;
   }
 
   private planetFromBerryAndPlanet(
@@ -58,5 +80,15 @@ export class StarWarsPlanetService implements IStarWarsPlanet {
       },
     };
     return starWarsPlanet;
+  }
+
+  private responseHistoricalDataCreate(
+    dataToSave: StarWarsPlanetPayloadModel
+  ): ResponseHistoricalModel {
+    return {
+      type: STAR_WARS_PLANET_HISTORICAL_TYPE,
+      timestamp: new Date().toISOString(),
+      response: dataToSave,
+    };
   }
 }

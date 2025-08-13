@@ -28,6 +28,7 @@ export class DynamoClient implements IDBClient {
       });
       return (await this.ddbDocClient.send(command)).Item as T;
     } catch (error) {
+      console.log(error);
       throw new InternalErrorException(error.message);
     }
   }
@@ -40,6 +41,7 @@ export class DynamoClient implements IDBClient {
       });
       await this.ddbDocClient.send(command);
     } catch (error) {
+      console.log(error);
       throw new InternalErrorException(error.message);
     }
   }
