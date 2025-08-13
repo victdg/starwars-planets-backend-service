@@ -3,5 +3,5 @@ import { ResponseHistoricalModel } from "./responseHistorical";
 
 export interface ResponseHistoricalPaginatedModel {
   data: Array<ResponseHistoricalModel>;
-  lastKey: string | PlanetHistoricalKeyModel;
+  lastKey?: string | PlanetHistoricalKeyModel;
 }

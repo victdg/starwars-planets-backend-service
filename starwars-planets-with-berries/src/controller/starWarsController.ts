@@ -34,4 +34,19 @@ export class StarWarsController {
       return errorResponseManager(error);
     }
   }
+
+  async getHistoricalFetchPlanet(
+    event: APIGatewayProxyEvent
+  ): Promise<APIGatewayProxyResult> {
+    try {
+      const lastKey: string = event.queryStringParameters?.lastKey!;
+
+      const resultFromService =
+        await this.starWarsService.getHistoricalFetchPlanet(lastKey);
+      return responseOkGenerator(resultFromService);
+    } catch (error) {
+      console.error("Error in saveKing:", error);
+      return errorResponseManager(error);
+    }
+  }
 }

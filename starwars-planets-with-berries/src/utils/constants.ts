@@ -20,6 +20,8 @@ export const FETCH_FROM_CACHE = "fetch from cache";
 export const STAR_WARS_PLANET_HISTORICAL_TYPE =
   "StarWarsPlanetHistoricalFetchData";
 
+export const PAGINATED_LIMIT = 3;
+
 export const HTTP_CODES = {
   OK: { statusCode: 200, message: "Ok" },
   BAD_REQUEST: { statusCode: 400, message: "Bad request" },

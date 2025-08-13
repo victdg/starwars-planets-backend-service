@@ -28,3 +28,5 @@ const starWarsPlanetService = new StarWarsPlanetService(
 const starWarsController = new StarWarsController(starWarsPlanetService);
 export const getPlanets = (event) => starWarsController.getPlanets(event);
 export const saveKing = (event) => starWarsController.saveKing(event);
+export const getHistoricalFetchPlanet = (event) =>
+  starWarsController.getHistoricalFetchPlanet(event);

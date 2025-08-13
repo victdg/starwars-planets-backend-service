@@ -5,6 +5,6 @@ import { ResponseHistoricalPaginatedModel } from "../models/responseHistoricalPa
 export interface ResponseHistoricalPort {
   save(responseHistoricalModel: ResponseHistoricalModel): Promise<void>;
   getHistoricalFetchPlanet(
-    lastKey: PlanetHistoricalKeyModel
+    lastSortKey?: string
   ): Promise<ResponseHistoricalPaginatedModel>;
 }

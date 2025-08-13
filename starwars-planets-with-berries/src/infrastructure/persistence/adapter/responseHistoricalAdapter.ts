@@ -1,4 +1,3 @@
-import { PlanetHistoricalKeyModel } from "../../../application/models/planetHistoricalKey";
 import { ResponseHistoricalModel } from "../../../application/models/responseHistorical";
 import { ResponseHistoricalPaginatedModel } from "../../../application/models/responseHistoricalPaginated";
 import { ResponseHistoricalPort } from "../../../application/ports/responseHistoricalPort";
@@ -11,9 +10,8 @@ import { IDBClient } from "../IDBClient";
 export class ResponseHistoricalAdapter implements ResponseHistoricalPort {
   constructor(private readonly dynamoClient: IDBClient) {}
   async getHistoricalFetchPlanet(
-    lastKey: PlanetHistoricalKeyModel
+    lastSortKey?: string
   ): Promise<ResponseHistoricalPaginatedModel> {
-    let partitionKey, lastSortKey;
     const paginatedData = await this.dynamoClient.queryPaginatedData<
       ResponseHistoricalModel,
       string,
@@ -25,16 +23,15 @@ export class ResponseHistoricalAdapter implements ResponseHistoricalPort {
       "timestamp",
       lastSortKey
     );
+
+    const { data, lastKey } = paginatedData;
+
     return {
-      ...paginatedData,
-      lastKey: paginatedData.lastKey
-        ? ({
-            partitionKey: paginatedData.lastKey.partitionKey,
-            sortKey: paginatedData.lastKey.sortKey,
-          } as PlanetHistoricalKeyModel)
-        : undefined,
+      data: data,
+      lastKey: { type: lastKey?.type, timestamp: lastKey?.timestamp },
     };
   }
+
   async save(responseHistoricalModel: ResponseHistoricalModel): Promise<void> {
     await this.dynamoClient.saveItem(
       HISTORICAL_TABLE_NAME,

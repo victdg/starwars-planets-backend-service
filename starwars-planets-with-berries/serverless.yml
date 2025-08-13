@@ -44,6 +44,17 @@ functions:
     environment:
       KING_TABLE_NAME: ${self:custom.kingTable}
       REGION: ${self:custom.awsRegion}
+  getHistoricalFetchPlanet:
+    handler: handler.getHistoricalFetchPlanet
+    role: !GetAtt GetPlanetsLambdaRole.Arn
+    timeout: 30
+    events:
+      - httpApi:
+          path: /historicalFetchPlanet
+          method: get
+    environment:
+      HISTORICAL_TABLE_NAME: ${self:custom.historicalDynamoDBTable}
+      REGION: ${self:custom.awsRegion}
 
 resources:
   Resources:
@@ -111,6 +122,7 @@ resources:
                     - arn:aws:dynamodb:*:*:table/${self:custom.cacheDynamoDBTable}
                 - Effect: Allow
                   Action:
+                    - dynamodb:Query
                     - dynamodb:PutItem
                   Resource:
                     - arn:aws:dynamodb:*:*:table/${self:custom.historicalDynamoDBTable}

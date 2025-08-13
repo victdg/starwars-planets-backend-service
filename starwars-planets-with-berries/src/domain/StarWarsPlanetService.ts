@@ -13,7 +13,7 @@ import { PlanetHistoricalKeyModel } from "./models/planetHistoricalKey";
 import { ResponseHistoricalModel } from "./models/responseHistorical";
 import { ResponseHistoricalPaginatedModel } from "./models/responseHistoricalPaginated";
 import { StarWarsPlanetModel } from "./models/starWarsPlanetModel";
-import { StarWarsPlanetPayloadModel } from "./models/starWarsPlanetPayloadModel";
+import { StarWarsPlanetPayloadModel } from "./models/starWarsPlanetPayload";
 import { BerryPort } from "./ports/berryPort";
 import { KingPort } from "./ports/kingPort";
 import { PlanetPort } from "./ports/planetPort";
@@ -33,10 +33,11 @@ export class StarWarsPlanetService implements IStarWarsPlanet {
     lastKey: string
   ): Promise<ResponseHistoricalPaginatedModel> {
     const lastKeyDecoded = this.lastKeyDecode(lastKey);
+    console.log("lastKeyDecoded::>>", lastKeyDecoded);
     this.lastKeyValidate(lastKeyDecoded);
     const responseHistorical =
       await this.responseHistoricalAdapter.getHistoricalFetchPlanet(
-        lastKeyDecoded!
+        lastKeyDecoded?.timestamp
       );
     responseHistorical.lastKey = this.lastKeyEncode(
       responseHistorical.lastKey as PlanetHistoricalKeyModel
@@ -98,13 +99,7 @@ export class StarWarsPlanetService implements IStarWarsPlanet {
   }
 
   private lastKeyValidate(lastKey: PlanetHistoricalKeyModel | null): void {
-    if (
-      !lastKey ||
-      !lastKey.type ||
-      !lastKey.timestamp ||
-      typeof lastKey.type !== "string" ||
-      typeof lastKey.timestamp !== "string"
-    )
+    if (typeof lastKey === "string" && lastKey !== "")
       throw new BadRequestException();
   }
 
