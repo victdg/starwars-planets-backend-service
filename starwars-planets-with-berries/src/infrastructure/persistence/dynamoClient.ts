@@ -3,10 +3,14 @@ import {
   DynamoDBDocumentClient,
   GetCommand,
   PutCommand,
+  QueryCommand,
+  QueryCommandInput,
 } from "@aws-sdk/lib-dynamodb";
 import { REGION } from "../../utils/constants";
 import { InternalErrorException } from "../../application/exceptions/internalErrorException";
 import { IDBClient } from "./IDBClient";
+import { GenericKey } from "./genericKey";
+import { GenericPaginatedData } from "./genericPaginatedData";
 
 export class DynamoClient implements IDBClient {
   private readonly ddbClient: DynamoDBClient;
@@ -15,6 +19,39 @@ export class DynamoClient implements IDBClient {
   constructor() {
     this.ddbClient = new DynamoDBClient({ region: REGION });
     this.ddbDocClient = DynamoDBDocumentClient.from(this.ddbClient);
+  }
+  async queryPaginatedData<T, P, S>(
+    tableName: string,
+    primaryKeyName: string,
+    primaryKeyValue: P,
+    lastSortKeyName: string,
+    lastSortKeyValue?: S
+  ): Promise<GenericPaginatedData<T, P, S>> {
+    try {
+      const params: QueryCommandInput = {
+        TableName: tableName,
+        KeyConditionExpression: `#${primaryKeyName} = :pk`,
+        ExpressionAttributeValues: {
+          ":pk": primaryKeyValue,
+        },
+        ExclusiveStartKey:
+          lastSortKeyValue !== undefined
+            ? {
+                [primaryKeyName]: primaryKeyValue,
+                [lastSortKeyName]: lastSortKeyValue,
+              }
+            : undefined,
+      };
+      const foundedData = await this.ddbDocClient.send(
+        new QueryCommand(params)
+      );
+      const lastKey = foundedData.LastEvaluatedKey as GenericKey<P, S>;
+      const data = foundedData.Items as T[];
+      return { data, lastKey };
+    } catch (error) {
+      console.log(error);
+      throw new InternalErrorException(error.message);
+    }
   }
 
   async getItemByKey<T>(

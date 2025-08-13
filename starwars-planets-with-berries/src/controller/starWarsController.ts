@@ -4,6 +4,7 @@ import { errorResponseManager, responseOkGenerator } from "../utils/helpers";
 
 export class StarWarsController {
   constructor(private readonly starWarsService: IStarWarsPlanet) {}
+
   async getPlanets(
     event: APIGatewayProxyEvent
   ): Promise<APIGatewayProxyResult> {
@@ -15,6 +16,21 @@ export class StarWarsController {
       return responseOkGenerator(resultFromService);
     } catch (error) {
       console.error("Error in getPlanets:", error);
+      return errorResponseManager(error);
+    }
+  }
+
+  async saveKing(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
+    try {
+      const planetId: number = Number(event.pathParameters!.planetId!);
+      const { kingName } = JSON.parse(event.body!);
+      await this.starWarsService.saveKing({
+        planetId,
+        kingName,
+      });
+      return responseOkGenerator();
+    } catch (error) {
+      console.error("Error in saveKing:", error);
       return errorResponseManager(error);
     }
   }

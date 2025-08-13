@@ -17,13 +17,14 @@ provider:
 custom:
   cacheDynamoDBTable: "StarWarsCacheTable"
   historicalDynamoDBTable: "StarWarsHistoricalResponseTable"
+  kingTable: "StarWarsKingTable"
   awsRegion: us-east-1
 
 functions:
   getPlanets:
     handler: handler.getPlanets
     role: !GetAtt GetPlanetsLambdaRole.Arn
-    timeout: 60
+    timeout: 30
     events:
       - httpApi:
           path: /planet/{id}
@@ -31,6 +32,17 @@ functions:
     environment:
       CACHE_TABLE_NAME: ${self:custom.cacheDynamoDBTable}
       HISTORICAL_TABLE_NAME: ${self:custom.historicalDynamoDBTable}
+      REGION: ${self:custom.awsRegion}
+  saveKing:
+    handler: handler.saveKing
+    role: !GetAtt GetPlanetsLambdaRole.Arn
+    timeout: 30
+    events:
+      - httpApi:
+          path: /king/{planetId}
+          method: post
+    environment:
+      KING_TABLE_NAME: ${self:custom.kingTable}
       REGION: ${self:custom.awsRegion}
 
 resources:
@@ -64,6 +76,17 @@ resources:
           - AttributeName: timestamp
             KeyType: RANGE
         BillingMode: PAY_PER_REQUEST
+    kingTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.kingTable}
+        AttributeDefinitions:
+          - AttributeName: planetId
+            AttributeType: N
+        KeySchema:
+          - AttributeName: planetId
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
     GetPlanetsLambdaRole:
       Type: AWS::IAM::Role
       Properties:
@@ -91,6 +114,11 @@ resources:
                     - dynamodb:PutItem
                   Resource:
                     - arn:aws:dynamodb:*:*:table/${self:custom.historicalDynamoDBTable}
+                - Effect: Allow
+                  Action:
+                    - dynamodb:PutItem
+                  Resource:
+                    - arn:aws:dynamodb:*:*:table/${self:custom.kingTable}
                 - Effect: Allow
                   Action:
                     - logs:CreateLogGroup
