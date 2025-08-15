@@ -5,6 +5,10 @@
     "axios": "^1.11.0"
   },
   "devDependencies": {
-    "@types/axios": "^0.14.4"
+    "@types/axios": "^0.14.4",
+    "@types/jest": "^30.0.0",
+    "aws-sdk-client-mock": "^4.1.0",
+    "jest": "^30.0.5",
+    "ts-jest": "^29.4.1"
   }
 }

@@ -3,16 +3,24 @@ export const INTERNAL_ERROR_EXCEPTION_MESSAGE = "Something went wrong";
 export const UNAVAILABLE_EXCEPTION_MESSAGE = "Service unavailable";
 export const BAD_REQUEST_EXCEPTION_MESSAGE = "Bad request";
 
-export const HISTORICAL_TABLE_NAME = process.env.HISTORICAL_TABLE_NAME;
-export const CACHE_TABLE_NAME = process.env.CACHE_TABLE_NAME;
-export const KING_TABLE_NAME = process.env.KING_TABLE_NAME;
+export const REQUEST_INFO = "Request info";
+export const RESPONSE_INFO = "Response info";
+export const PROCESS_IN_CONTROLLER = "Process in controller";
+export const PROCESS_IN_DOMAIN = "Process in domain";
+export const PROCESS_IN_ADAPTER = "Process in adapter";
+export const PROCESS_IN_ADAPTER_CLIENT = "Process in adapter client";
+
+export const STAGE = process.env.STAGE || "dev";
+export const HISTORICAL_TABLE_NAME = process.env.HISTORICAL_TABLE_NAME || "";
+export const CACHE_TABLE_NAME = process.env.CACHE_TABLE_NAME || "";
+export const KING_TABLE_NAME = process.env.KING_TABLE_NAME || "";
 
 export const REGION = process.env.REGION;
 
 export const STAR_WARS_API_URL = "https://swapi.info/api/planets/";
 export const BERRY_API_URL = "https://pokeapi.co/api/v2/berry/";
 
-export const TTL_IN_SECONDS = 10;
+export const TTL_IN_SECONDS = 30;
 
 export const SAVE_IN_CACHE = "save in cache";
 export const FETCH_FROM_CACHE = "fetch from cache";

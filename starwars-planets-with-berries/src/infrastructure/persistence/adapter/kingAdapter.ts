@@ -1,6 +1,6 @@
 // Import or define KingPort interface/type
-import { KingModel } from "../../../application/models/king";
-import { KingPort } from "../../../application/ports/kingPort";
+import { KingModel } from "../../../domain/models/king";
+import { KingPort } from "../../../domain/ports/kingPort";
 import { KING_TABLE_NAME } from "../../../utils/constants";
 import { IDBClient } from "../IDBClient";
 

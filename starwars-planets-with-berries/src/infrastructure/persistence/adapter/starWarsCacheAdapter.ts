@@ -1,6 +1,7 @@
-import { StarWarsPlanetModel } from "../../../application/models/starWarsPlanetModel";
-import { StarWarsCachePort } from "../../../application/ports/starWarsCachePort";
+import { StarWarsPlanetModel } from "../../../domain/models/starWarsPlanetModel";
+import { StarWarsCachePort } from "../../../domain/ports/starWarsCachePort";
 import { CACHE_TABLE_NAME, TTL_IN_SECONDS } from "../../../utils/constants";
+import { logger } from "../../../utils/helpers";
 import { IDBClient } from "../IDBClient";
 import { StarWarsPlanetDBModel } from "../model/starWarsPlanetDBModel";
 
@@ -22,7 +23,7 @@ export class StarWarsCacheAdapter implements StarWarsCachePort {
 
   async save(starWarsPlanet: StarWarsPlanetModel): Promise<void> {
     const ttl = Math.floor(Date.now() / 1000) + TTL_IN_SECONDS;
-    console.log(ttl);
+    logger.debug(`ttl::>> ${ttl}`);
     const starWarsPlanetWithTtl: StarWarsPlanetDBModel = {
       ...starWarsPlanet,
       ttl,

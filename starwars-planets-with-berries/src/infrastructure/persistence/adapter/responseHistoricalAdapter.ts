@@ -1,6 +1,6 @@
-import { ResponseHistoricalModel } from "../../../application/models/responseHistorical";
-import { ResponseHistoricalPaginatedModel } from "../../../application/models/responseHistoricalPaginated";
-import { ResponseHistoricalPort } from "../../../application/ports/responseHistoricalPort";
+import { ResponseHistoricalModel } from "../../../domain/models/responseHistorical";
+import { ResponseHistoricalPaginatedModel } from "../../../domain/models/responseHistoricalPaginated";
+import { ResponseHistoricalPort } from "../../../domain/ports/responseHistoricalPort";
 import {
   HISTORICAL_TABLE_NAME,
   STAR_WARS_PLANET_HISTORICAL_TYPE,

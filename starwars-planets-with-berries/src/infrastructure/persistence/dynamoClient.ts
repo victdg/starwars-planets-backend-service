@@ -7,9 +7,10 @@ import {
   QueryCommandInput,
 } from "@aws-sdk/lib-dynamodb";
 import { PAGINATED_LIMIT, REGION } from "../../utils/constants";
-import { InternalErrorException } from "../../application/exceptions/internalErrorException";
+import { InternalErrorException } from "../../domain/exceptions/internalErrorException";
 import { IDBClient } from "./IDBClient";
 import { GenericPaginatedData } from "./genericPaginatedData";
+import { logger } from "../../utils/helpers";
 
 export class DynamoClient implements IDBClient {
   private readonly ddbClient: DynamoDBClient;
@@ -46,12 +47,11 @@ export class DynamoClient implements IDBClient {
             : undefined,
         Limit: PAGINATED_LIMIT,
       };
-      console.log("params::>>", params);
+      logger.debug("params to send::>>", params);
       const foundedData = await this.ddbDocClient.send(
         new QueryCommand(params)
       );
-      console.log("params");
-      console.log(params);
+      logger.debug("foundedData::>>", foundedData);
 
       let lastKey: Record<string, any> | undefined = undefined;
       if (foundedData.LastEvaluatedKey) {
@@ -62,9 +62,19 @@ export class DynamoClient implements IDBClient {
       }
 
       const data = foundedData.Items as T[];
+
+      logger.debug("data::>>", data);
+      logger.debug("lastKey::>>", lastKey);
+
       return { data, lastKey };
     } catch (error) {
-      console.log(error);
+      const errorDetails = {
+        name: error.name,
+        message: error.message,
+        stack: error.stack,
+        metadata: error.$metadata,
+      };
+      logger.error(`DynamoDB error in queryPaginatedData`, errorDetails);
       throw new InternalErrorException(error.message);
     }
   }
@@ -78,9 +88,10 @@ export class DynamoClient implements IDBClient {
         TableName: tableName,
         Key: key,
       });
+      logger.debug("command to send::>>", command);
       return (await this.ddbDocClient.send(command)).Item as T;
     } catch (error) {
-      console.log(error);
+      logger.error(`getItemByKey error: ${error}`, error);
       throw new InternalErrorException(error.message);
     }
   }
@@ -91,9 +102,10 @@ export class DynamoClient implements IDBClient {
         TableName: tableName,
         Item: item,
       });
+      logger.debug("command to send::>>", command);
       await this.ddbDocClient.send(command);
     } catch (error) {
-      console.log(error);
+      logger.error(`saveItem error: ${error}`, error);
       throw new InternalErrorException(error.message);
     }
   }

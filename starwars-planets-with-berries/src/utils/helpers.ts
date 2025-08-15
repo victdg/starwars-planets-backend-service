@@ -1,7 +1,7 @@
-import { BadRequestException } from "../application/exceptions/badRequestException";
-import { NotFoundException } from "../application/exceptions/notFoundException";
-import { UnavailableServerException } from "../application/exceptions/unavailableServerException";
-import { HTTP_CODES } from "./constants";
+import { BadRequestException } from "../domain/exceptions/badRequestException";
+import { NotFoundException } from "../domain/exceptions/notFoundException";
+import { UnavailableServerException } from "../domain/exceptions/unavailableServerException";
+import { HTTP_CODES, STAGE } from "./constants";
 
 export const responseOkGenerator = (resultFromService?: any) => {
   return {
@@ -23,32 +23,82 @@ export const responseErrorGenerator = (
 };
 
 export const errorResponseManager = (error: any) => {
-  console.log("ErrorResponseManager::>>");
   switch (true) {
     case error instanceof NotFoundException:
-      console.log("Not Found Exception");
       return responseErrorGenerator(
         HTTP_CODES.NOT_FOUND.statusCode,
-        error.message || HTTP_CODES.NOT_FOUND.message
+        HTTP_CODES.NOT_FOUND.message
       );
       break;
     case error instanceof UnavailableServerException:
       return responseErrorGenerator(
         HTTP_CODES.SERVICE_UNAVAILABLE.statusCode,
-        error.message || HTTP_CODES.SERVICE_UNAVAILABLE.message
+        HTTP_CODES.SERVICE_UNAVAILABLE.message
       );
       break;
     case error instanceof BadRequestException:
       return responseErrorGenerator(
         HTTP_CODES.BAD_REQUEST.statusCode,
-        error.message || HTTP_CODES.BAD_REQUEST.message
+        HTTP_CODES.BAD_REQUEST.message
       );
       break;
     default:
-      console.log("Default error");
       return responseErrorGenerator(
         HTTP_CODES.INTERNAL_SERVER_ERROR.statusCode,
-        error.message || HTTP_CODES.INTERNAL_SERVER_ERROR.message
+        HTTP_CODES.INTERNAL_SERVER_ERROR.message
       );
   }
 };
+
+type LogLevel = "DEBUG" | "INFO" | "WARN" | "ERROR";
+
+const shouldLog = (level: LogLevel) => {
+  const levelOrder = ["DEBUG", "INFO", "WARN", "ERROR"];
+  const minLevel = STAGE === "prod" ? "INFO" : "DEBUG"; // en prod no mostramos debug
+  return levelOrder.indexOf(level) >= levelOrder.indexOf(minLevel);
+};
+
+export const logger = {
+  debug: (msg: string, meta: Record<string, any> = {}) => {
+    if (shouldLog("DEBUG")) console.debug(formatLog("DEBUG", msg, meta));
+  },
+  info: (msg: string, meta: Record<string, any> = {}) => {
+    if (shouldLog("INFO")) console.info(formatLog("INFO", msg, meta));
+  },
+  warn: (msg: string, meta: Record<string, any> = {}) => {
+    if (shouldLog("WARN")) console.warn(formatLog("WARN", msg, meta));
+  },
+  error: (msg: string, meta: Record<string, any> = {}) => {
+    if (shouldLog("ERROR")) console.error(formatLog("ERROR", msg, meta));
+  },
+};
+
+function formatLog(level: LogLevel, msg: string, meta?: Record<string, any>) {
+  return JSON.stringify({
+    time: new Date().toISOString(),
+    stage: STAGE,
+    level,
+    message: msg,
+    ...meta,
+  });
+}
+
+export function requestGenerator(event: any) {
+  return {
+    body: event.body,
+    headers: event.headers,
+    pathParameters: event.pathParameters,
+    queryStringParameters: event.queryStringParameters,
+    httpMethod: event.httpMethod,
+    isBase64Encoded: event.isBase64Encoded,
+    requestContext: {
+      accountId: event.requestContext.accountId,
+      apiId: event.requestContext.apiId,
+      httpMethod: event.requestContext.httpMethod,
+      identity: event.requestContext.identity,
+      path: event.requestContext.path,
+      protocol: event.requestContext.protocol,
+      requestId: event.requestContext.requestId,
+    },
+  };
+}

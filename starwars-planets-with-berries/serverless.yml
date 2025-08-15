@@ -3,22 +3,24 @@ org: zuvito
 # "app" enables Serverless Framework Dashboard features and sharing them with other Services.
 app: star-wars-with-berries-v1
 # "service" is the name of this project. This will also be added to your AWS resource names.
-service: starwars-planets-with-berries
+service: starwars-planets
 
 provider:
   name: aws
   runtime: nodejs20.x
   region: ${self:custom.awsRegion}
+  stage: ${self:custom.stage}
 
   # Uncomment to easily set up a custom domain. Read the docs for more details:
   # https://www.serverless.com/framework/docs/providers/aws/guide/domains
   # domain: api.example.com
 
 custom:
-  cacheDynamoDBTable: "StarWarsCacheTable"
-  historicalDynamoDBTable: "StarWarsHistoricalResponseTable"
-  kingTable: "StarWarsKingTable"
-  awsRegion: us-east-1
+  cacheDynamoDBTable: "StarWarsCacheTable-${self:custom.stage}"
+  historicalDynamoDBTable: "StarWarsHistoricalResponseTable-${self:custom.stage}"
+  kingTable: "StarWarsKingTable-${self:custom.stage}"
+  awsRegion: sa-east-1
+  stage: ${opt:stage, 'dev'}
 
 functions:
   getPlanets:
@@ -33,6 +35,7 @@ functions:
       CACHE_TABLE_NAME: ${self:custom.cacheDynamoDBTable}
       HISTORICAL_TABLE_NAME: ${self:custom.historicalDynamoDBTable}
       REGION: ${self:custom.awsRegion}
+      STAGE: ${self:custom.stage}
   saveKing:
     handler: handler.saveKing
     role: !GetAtt GetPlanetsLambdaRole.Arn
@@ -44,6 +47,7 @@ functions:
     environment:
       KING_TABLE_NAME: ${self:custom.kingTable}
       REGION: ${self:custom.awsRegion}
+      STAGE: ${self:custom.stage}
   getHistoricalFetchPlanet:
     handler: handler.getHistoricalFetchPlanet
     role: !GetAtt GetPlanetsLambdaRole.Arn
@@ -55,6 +59,7 @@ functions:
     environment:
       HISTORICAL_TABLE_NAME: ${self:custom.historicalDynamoDBTable}
       REGION: ${self:custom.awsRegion}
+      STAGE: ${self:custom.stage}
 
 resources:
   Resources:
@@ -101,7 +106,7 @@ resources:
     GetPlanetsLambdaRole:
       Type: AWS::IAM::Role
       Properties:
-        RoleName: GetPlanetsLambdaRole
+        RoleName: LambdaRole-${self:custom.stage}
         AssumeRolePolicyDocument:
           Version: "2012-10-17"
           Statement:

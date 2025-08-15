@@ -5,7 +5,7 @@ import { DynamoClient } from "./src/infrastructure/persistence/dynamoClient";
 import { StarWarsCacheAdapter } from "./src/infrastructure/persistence/adapter/starWarsCacheAdapter";
 import { ResponseHistoricalAdapter } from "./src/infrastructure/persistence/adapter/responseHistoricalAdapter";
 import { KingAdapter } from "./src/infrastructure/persistence/adapter/kingAdapter";
-import { StarWarsPlanetService } from "./src/application/StarWarsPlanetService";
+import { StarWarsPlanetService } from "./src/domain/StarWarsPlanetService";
 import { StarWarsController } from "./src/controller/starWarsController";
 
 const axiosClient = new AxiosClient();

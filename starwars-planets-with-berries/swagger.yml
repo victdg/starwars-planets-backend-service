@@ -1,0 +1,217 @@
+openapi: 3.0.1
+info:
+  title: Star Wars Planets API
+  description: API para obtener información de planetas de Star Wars y datos adicionales.
+  version: 1.0.0
+servers:
+  - url: https://dgodrwf0x8.execute-api.sa-east-1.amazonaws.com
+    description: Entorno de Desarrollo
+  - url: https://kml02dlhu2.execute-api.sa-east-1.amazonaws.com
+    description: Entorno de Producción
+
+paths:
+  /planet/{id}:
+    get:
+      summary: Obtiene un planeta por su ID
+      description: Retorna los detalles de un planeta específico, combinado con información de una "berry" típica.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID numérico del planeta a obtener.
+          schema:
+            type: integer
+            example: 1
+      responses:
+        "200":
+          description: Respuesta exitosa.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlanetResponse"
+        "400":
+          description: Petición inválida (ej. ID no numérico).
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Planeta no encontrado.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Error interno del servidor.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /king/{planetId}:
+    post:
+      summary: Guarda el rey de un planeta
+      description: Asigna un rey a un planeta específico y guarda la información.
+      parameters:
+        - name: planetId
+          in: path
+          required: true
+          description: ID del planeta al que se le asignará el rey.
+          schema:
+            type: integer
+            example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/KingRequest"
+      responses:
+        "200":
+          description: Rey guardado exitosamente.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "OK"
+        "400":
+          description: Petición inválida (ej. cuerpo de la petición mal formado).
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Error interno del servidor.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /historicalFetchPlanet:
+    get:
+      summary: Obtiene el historial de búsquedas de planetas
+      description: Retorna una lista paginada del historial de consultas al endpoint de planetas.
+      parameters:
+        - name: lastKey
+          in: query
+          required: false
+          description: Clave para obtener la siguiente página de resultados.
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Respuesta exitosa.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HistoricalResponse"
+        "500":
+          description: Error interno del servidor.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+components:
+  schemas:
+    PlanetResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 1
+            name:
+              type: string
+              example: "Tatooine"
+            rotation_period:
+              type: string
+              example: "23"
+            orbital_period:
+              type: string
+              example: "304"
+            diameter:
+              type: string
+              example: "10465"
+            climate:
+              type: string
+              example: "arid"
+            gravity:
+              type: string
+              example: "1 standard"
+            terrain:
+              type: string
+              example: "desert"
+            surface_water:
+              type: string
+              example: "1"
+            population:
+              type: string
+              example: "200000"
+            typicalFood:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "cheri"
+                growth_time:
+                  type: string
+                  example: "3"
+                smoothness:
+                  type: string
+                  example: "25"
+                size:
+                  type: integer
+                  example: 20
+        cache:
+          type: string
+          example: "FETCH_FROM_CACHE"
+
+    KingRequest:
+      type: object
+      required:
+        - kingName
+      properties:
+        kingName:
+          type: string
+          description: Nombre del rey a asignar.
+          example: "Jabba"
+
+    HistoricalItem:
+      type: object
+      properties:
+        type:
+          type: string
+          example: "planet"
+        timestamp:
+          type: string
+          format: date-time
+          example: "2024-01-01T12:00:00Z"
+        response:
+          type: string
+          description: La respuesta original en formato JSON string.
+          example: "{...}"
+
+    HistoricalResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/HistoricalItem"
+        lastKey:
+          type: object
+          description: Objeto que contiene la clave para la siguiente página.
+          example: { "type": "planet", "timestamp": "2024-01-01T11:00:00Z" }
+
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Mensaje descriptivo del error.

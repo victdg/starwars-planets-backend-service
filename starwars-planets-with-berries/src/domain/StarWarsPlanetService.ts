@@ -1,6 +1,7 @@
 import { Buffer } from "buffer";
 import {
   FETCH_FROM_CACHE,
+  PROCESS_IN_DOMAIN,
   SAVE_IN_CACHE,
   STAR_WARS_PLANET_HISTORICAL_TYPE,
 } from "../utils/constants";
@@ -19,6 +20,7 @@ import { KingPort } from "./ports/kingPort";
 import { PlanetPort } from "./ports/planetPort";
 import { ResponseHistoricalPort } from "./ports/responseHistoricalPort";
 import { StarWarsCachePort } from "./ports/starWarsCachePort";
+import { logger } from "../utils/helpers";
 
 export class StarWarsPlanetService implements IStarWarsPlanet {
   constructor(
@@ -30,25 +32,54 @@ export class StarWarsPlanetService implements IStarWarsPlanet {
   ) {}
 
   async getHistoricalFetchPlanet(
-    lastKey: string
+    lastKey?: string
   ): Promise<ResponseHistoricalPaginatedModel> {
-    const lastKeyDecoded = this.lastKeyDecode(lastKey);
-    console.log("lastKeyDecoded::>>", lastKeyDecoded);
-    this.lastKeyValidate(lastKeyDecoded);
+    let lastSortKey: string | undefined = undefined;
+    logger.info(PROCESS_IN_DOMAIN);
+    logger.debug(`lastKey::>> ${lastKey}`);
+    if (lastKey !== undefined) {
+      logger.debug("About to decode lastKey");
+      const lastKeyDecoded = this.lastKeyDecode(lastKey);
+      logger.debug(`lastKeyDecoded::>> ${lastKeyDecoded}`);
+      this.lastKeyValidate(lastKeyDecoded);
+      logger.debug(`lastKeyDecoded::>>`, lastKeyDecoded ?? undefined);
+      lastSortKey = lastKeyDecoded!.timestamp;
+    }
+
     const responseHistorical =
       await this.responseHistoricalAdapter.getHistoricalFetchPlanet(
-        lastKeyDecoded?.timestamp
+        lastSortKey
       );
-    responseHistorical.lastKey = this.lastKeyEncode(
-      responseHistorical.lastKey as PlanetHistoricalKeyModel
-    );
+
+    logger.debug(`responseHistorical::>> ${responseHistorical}`);
+
+    if (responseHistorical.lastKey !== undefined) {
+      responseHistorical.lastKey = this.lastKeyEncode(
+        responseHistorical.lastKey as PlanetHistoricalKeyModel
+      );
+      logger.debug(
+        `responseHistorical.lastKey::>> ${responseHistorical.lastKey}`
+      );
+    }
     return responseHistorical;
   }
 
   async fetchPlanet(planetId: number): Promise<StarWarsPlanetPayloadModel> {
+    logger.info(PROCESS_IN_DOMAIN);
+    logger.debug(`planetId::>> ${planetId}`);
+    if (isNaN(planetId) || planetId <= 0) {
+      logger.error("Invalid planetId");
+      throw new BadRequestException();
+    }
+
     let starWarsPlanetDataFromCache = await this.starWarsCacheAdapter.fetch(
       planetId
     );
+    logger.debug(
+      "starWarsPlanetDataFromCache::>>",
+      starWarsPlanetDataFromCache ?? undefined
+    );
+
     if (starWarsPlanetDataFromCache !== null) {
       const starWarsPlanetPayload: StarWarsPlanetPayloadModel = {
         data: starWarsPlanetDataFromCache,
@@ -57,6 +88,7 @@ export class StarWarsPlanetService implements IStarWarsPlanet {
       const historicalDataToSave = this.responseHistoricalDataCreate(
         starWarsPlanetPayload
       );
+      logger.debug("historicalDataToSave::>>", historicalDataToSave);
       this.responseHistoricalAdapter.save(historicalDataToSave);
       return starWarsPlanetPayload;
     }
@@ -66,7 +98,13 @@ export class StarWarsPlanetService implements IStarWarsPlanet {
       this.planetAdapter.fetchPlanet(planetId),
     ]);
 
+    logger.debug("berry founded::>>", berry);
+    logger.debug("planet founded::>>", planet);
+
     const starWarsPlanet = this.planetFromBerryAndPlanet(berry, planet);
+
+    logger.debug("starWarsPlanet to save in cache::>>", starWarsPlanet);
+
     await this.starWarsCacheAdapter.save(starWarsPlanet);
 
     const starWarsPlanetPayload: StarWarsPlanetPayloadModel = {
@@ -76,12 +114,16 @@ export class StarWarsPlanetService implements IStarWarsPlanet {
     const historicalDataToSave = this.responseHistoricalDataCreate(
       starWarsPlanetPayload
     );
+
+    logger.debug("historicalDataToSave::>>", historicalDataToSave);
+
     this.responseHistoricalAdapter.save(historicalDataToSave);
     return starWarsPlanetPayload;
   }
 
   async saveKing(king: KingModel): Promise<void> {
-    console.log(king);
+    logger.info(PROCESS_IN_DOMAIN);
+    logger.debug("king to save::>>", king);
     this.kingModelValidate(king);
     await this.kingAdapter.saveKing(king);
   }
@@ -99,7 +141,7 @@ export class StarWarsPlanetService implements IStarWarsPlanet {
   }
 
   private lastKeyValidate(lastKey: PlanetHistoricalKeyModel | null): void {
-    if (typeof lastKey === "string" && lastKey !== "")
+    if (lastKey === null || typeof lastKey?.timestamp !== "string")
       throw new BadRequestException();
   }
 
