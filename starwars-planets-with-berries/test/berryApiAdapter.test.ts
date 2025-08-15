@@ -1,8 +1,8 @@
-import { BerryApiAdapter } from "./berryApiAdapter";
-import { IHttpClient } from "../IHttpClient";
-import { BerryDto } from "../dto/berry";
-import { BERRY_API_URL } from "../../../utils/constants";
-import { NotFoundException } from "../../../domain/exceptions/notFoundException";
+import { BerryApiAdapter } from "../src/infrastructure/gateway/adapter/berryApiAdapter";
+import { IHttpClient } from "../src/infrastructure/gateway/IHttpClient";
+import { BerryDto } from "../src/infrastructure/gateway/dto/berry";
+import { BERRY_API_URL } from "../src/utils/constants";
+import { NotFoundException } from "../src/domain/exceptions/notFoundException";
 
 const mockHttpClient: jest.Mocked<IHttpClient> = {
   get: jest.fn(),

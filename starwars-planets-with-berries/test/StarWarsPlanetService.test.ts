@@ -1,17 +1,17 @@
-import { StarWarsPlanetService } from "./StarWarsPlanetService";
-import { BerryPort } from "./ports/berryPort";
-import { PlanetPort } from "./ports/planetPort";
-import { StarWarsCachePort } from "./ports/starWarsCachePort";
-import { ResponseHistoricalPort } from "./ports/responseHistoricalPort";
-import { KingPort } from "./ports/kingPort";
-import { Planet } from "./models/planet";
-import { Berry } from "./models/berry";
-import { NotFoundException } from "./exceptions/notFoundException";
-import { KingModel } from "./models/king";
-import { ResponseHistoricalModel } from "./models/responseHistorical";
-import { StarWarsPlanetModel } from "./models/starWarsPlanetModel";
-import { StarWarsPlanetPayloadModel } from "./models/starWarsPlanetPayload";
-import { FETCH_FROM_CACHE, SAVE_IN_CACHE } from "../utils/constants";
+import { StarWarsPlanetService } from "../src/domain/StarWarsPlanetService";
+import { BerryPort } from "../src/domain/ports/berryPort";
+import { PlanetPort } from "../src/domain/ports/planetPort";
+import { StarWarsCachePort } from "../src/domain/ports/starWarsCachePort";
+import { ResponseHistoricalPort } from "../src/domain/ports/responseHistoricalPort";
+import { KingPort } from "../src/domain/ports/kingPort";
+import { Planet } from "../src/domain/models/planet";
+import { Berry } from "../src/domain/models/berry";
+import { NotFoundException } from "../src/domain/exceptions/notFoundException";
+import { KingModel } from "../src/domain/models/king";
+import { ResponseHistoricalModel } from "../src/domain/models/responseHistorical";
+import { StarWarsPlanetModel } from "../src/domain/models/starWarsPlanetModel";
+import { StarWarsPlanetPayloadModel } from "../src/domain/models/starWarsPlanetPayload";
+import { FETCH_FROM_CACHE, SAVE_IN_CACHE } from "../src/utils/constants";
 
 const mockBerryApiAdapter: jest.Mocked<BerryPort> = {
   fetchBerry: jest.fn(),

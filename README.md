@@ -8,8 +8,13 @@ Api que integra dos apis:
 
 - Star Wars Api servicio planets
 - PokeApi servicio berry
-  Se hace la integración considerando que el berry (comida tipica del planeta) contiene el mismo id del planeta.
-  Se desarrollaron 3 endpoints
+
+Se hace la integración considerando que el berry (comida tipica del planeta) contiene el mismo id del planeta.
+
+## Endpoints desarrollados
+
+Se desarrollaron 3 endpoints
+
 - planet: de donde se obtiene el planeta
 - king: se almacena el rey de un planeta
 - historicalFetchPlanet: brinda el historico de las consultas a planet, páginado con el último registro brindado (este campo es retornado por el api, cuando se consulta el primero no debe de enviarse)

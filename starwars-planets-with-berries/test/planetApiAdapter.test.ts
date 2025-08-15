@@ -1,8 +1,8 @@
-import { PlanetApiAdapter } from "./planetApiAdapter";
-import { IHttpClient } from "../IHttpClient";
-import { PlanetDto } from "../dto/planet";
-import { STAR_WARS_API_URL } from "../../../utils/constants";
-import { NotFoundException } from "../../../domain/exceptions/notFoundException";
+import { PlanetApiAdapter } from "../src/infrastructure/gateway/adapter/planetApiAdapter";
+import { IHttpClient } from "../src/infrastructure/gateway/IHttpClient";
+import { PlanetDto } from "../src/infrastructure/gateway/dto/planet";
+import { STAR_WARS_API_URL } from "../src/utils/constants";
+import { NotFoundException } from "../src/domain/exceptions/notFoundException";
 
 const mockHttpClient: jest.Mocked<IHttpClient> = {
   get: jest.fn(),
