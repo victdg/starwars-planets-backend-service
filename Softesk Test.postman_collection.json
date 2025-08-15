@@ -1,0 +1,91 @@
+{
+	"info": {
+		"_postman_id": "c5b4fc90-7997-4681-92f5-2bd814dd8402",
+		"name": "Softesk Test",
+		"description": "Colección para hacer pruebas a los servicios desplegados. Tiene dos ambientes:\n\n- Dev\n    \n- Prod",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "23072969"
+	},
+	"item": [
+		{
+			"name": "Get Planets",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{URL}}/planet/3",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"planet",
+						"3"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Save king to planet",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"kingName\": \"Gandalf\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "text"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{URL}}/king/1",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"king",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get historical planet fetch",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{URL}}/historicalFetchPlanet?lastKey=eyJ0eXBlIjoiU3RhcldhcnNQbGFuZXRIaXN0b3JpY2FsRmV0Y2hEYXRhIiwidGltZXN0YW1wIjoiMjAyNS0wOC0xM1QxMTo1MDozOC45MzRaIn0=",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"historicalFetchPlanet"
+					],
+					"query": [
+						{
+							"key": "lastKey",
+							"value": "eyJ0eXBlIjoiU3RhcldhcnNQbGFuZXRIaXN0b3JpY2FsRmV0Y2hEYXRhIiwidGltZXN0YW1wIjoiMjAyNS0wOC0xM1QxMTo1MDozOC45MzRaIn0="
+						},
+						{
+							"key": "lastKey",
+							"value": "123",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"value": "",
+			"type": "string",
+			"disabled": true
+		}
+	]
+}

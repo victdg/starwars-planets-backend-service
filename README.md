@@ -31,3 +31,8 @@ Se desarrollaron 3 endpoints
 ## Contrato:
 
 http://swagger-docs-starwars-victorzubiaga.s3-website-sa-east-1.amazonaws.com/#/
+
+## Pruebas funcionales
+
+En el repositorio está la colección de postman, archivo:
+Softesk Test.postman_collection.json
