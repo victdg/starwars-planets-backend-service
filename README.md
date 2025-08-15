@@ -4,12 +4,27 @@ starwars-planets-backend-service
 
 ## Descripción
 
+### getPlanets
+
 Api que integra dos apis:
 
 - Star Wars Api servicio planets
 - PokeApi servicio berry
 
 Se hace la integración considerando que el berry (comida tipica del planeta) contiene el mismo id del planeta.
+
+Se consulta si hay datos del id en cache, si hay se retornan y se guarda en la BD en el histórico
+Sino hay datos en cache, se consultan las apis, se guarda en caché e histórico
+
+En ambos casos el resultado se retorna al cliente http
+
+### getHistoricalFetchPlanet
+
+Servicio que retorna las consultas guardadas en la BD
+
+### saveKing
+
+Servicio que permite guardar registros en la BD
 
 ## Endpoints desarrollados
 
