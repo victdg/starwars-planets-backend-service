@@ -47,6 +47,17 @@ Se desarrollaron 3 endpoints
 
 http://swagger-docs-starwars-victorzubiaga.s3-website-sa-east-1.amazonaws.com/#/
 
+## Funcionalidades opcionales en el reto e implementadas en la solución
+
+- Se implementa una lógica para el log avanzado, donde se tienen diferentes niveles según el ambiente: dev (debug, info, error) y prod (info, error)
+- Se documentó con swagger y se desplego en la nube de AWS
+
+## Indicaciones para pruebas
+
+- Entrar a la sub carpeta starwars-planets-with-berries dar npm install y luego serverless deploy --stage dev/prod (según se desee)
+- Para los unit test npm run test
+- Para pruebas funcionales importar la colección de postman que está en el repositorio, elegir el ambiente a probar dev/prod y probar los endpoint
+
 ## Pruebas funcionales
 
 En el repositorio está la colección de postman, archivo:
