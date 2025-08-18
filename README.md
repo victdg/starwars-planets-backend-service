@@ -42,6 +42,7 @@ Se desarrollaron 3 endpoints
 
 - Para evitar cobros de AWS, para el caché se utilizó una BD de dynamo con ttl para auto eliminación (pocos segundos para demostrar la auto eliminación)
 - En el archivo serverless se creó un solo rol para las tres lambdas, para simplicidad
+- Se implementó una arquitectura de software en capas, empleando interfaces con el fin de desacoplar los distintos elementos y minimizar dependencias.
 
 ## Contrato:
 
